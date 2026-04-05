@@ -22,7 +22,6 @@ export const registerUser = async (req, res) => {
       newUser.role
     );
     
-    // Refresh Token Cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -54,6 +53,9 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User not found" });
+    }
+    if (!user.isActive) {
+      return res.status(403).json({ message: "Account is deactivated. Contact admin." });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {

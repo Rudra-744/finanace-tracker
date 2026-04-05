@@ -1,14 +1,16 @@
 import express from "express";
 import { createRecord, getRecords, updateRecord, deleteRecord } from "../controller/record.controller.js";
 import { protect, restrictTo } from "../middlewares/auth.middleware.js";
+import validate from "../middlewares/validate.js";
+import { recordSchema } from "../utils/validators.js";
 
 const router = express.Router();
 
-router.use(protect); 
+router.use(protect);
 
 router.route("/")
     .get(getRecords)
-    .post(restrictTo("admin"), createRecord);
+    .post(restrictTo("admin"), validate(recordSchema), createRecord);
 
 router.route("/:id")
     .patch(restrictTo("admin"), updateRecord)
